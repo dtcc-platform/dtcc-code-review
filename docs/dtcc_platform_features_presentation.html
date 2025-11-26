@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTCC Platform - Current Features Overview</title>
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js@5/dist/reveal.css">
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js@5/dist/theme/black.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dtcc-gold: #FADA36;
+            --dtcc-dark: #101016;
+            --dtcc-dark-secondary: #1b1b22;
+            --dtcc-white: #ffffff;
+            --dtcc-white-subtle: rgba(255,255,255,0.35);
+        }
+
+        * {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .reveal,
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4,
+        .reveal p, .reveal li, .reveal td, .reveal th,
+        .reveal code, .reveal pre {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .reveal {
+            background: linear-gradient(180deg, var(--dtcc-dark) 0%, var(--dtcc-dark-secondary) 100%);
+        }
+
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: var(--dtcc-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+        }
+
+        .reveal h1 {
+            font-size: 1.98em;
+        }
+
+        .reveal h2 {
+            font-size: 1.44em;
+            border-bottom: 2px solid var(--dtcc-gold);
+            padding-bottom: 0.3em;
+            margin-bottom: 0.8em;
+        }
+
+        .reveal h3 {
+            font-size: 1.08em;
+            color: var(--dtcc-white);
+        }
+
+        .reveal p, .reveal li, .reveal td, .reveal th {
+            color: var(--dtcc-white);
+            font-size: 0.675em;
+        }
+
+        .reveal .subtitle {
+            color: var(--dtcc-white-subtle);
+            font-size: 1.08em;
+            margin-top: 0.5em;
+        }
+
+        .reveal .gold {
+            color: var(--dtcc-gold);
+        }
+
+        .reveal table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-size: 0.63em;
+        }
+
+        .reveal th {
+            background: rgba(250, 218, 54, 0.2);
+            color: var(--dtcc-gold);
+            padding: 0.5em 1em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.81em;
+        }
+
+        .reveal td {
+            padding: 0.4em 1em;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .reveal ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .reveal ul li {
+            position: relative;
+            padding-left: 1.5em;
+            margin-bottom: 0.4em;
+        }
+
+        .reveal ul li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.5em;
+            width: 8px;
+            height: 8px;
+            background: var(--dtcc-gold);
+            border-radius: 2px;
+        }
+
+        .reveal pre {
+            background: rgba(0,0,0,0.4);
+            border-left: 3px solid var(--dtcc-gold);
+            font-size: 0.45em;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .reveal code {
+            color: var(--dtcc-white);
+        }
+
+        .reveal .progress {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .reveal .progress span {
+            background: var(--dtcc-gold);
+        }
+
+        .reveal .slide-number {
+            color: var(--dtcc-gold);
+            background: transparent;
+        }
+
+        .reveal .controls button {
+            color: var(--dtcc-gold);
+        }
+
+        /* DTCC Header */
+        .dtcc-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: linear-gradient(180deg, rgba(8,8,12,0.92) 0%, rgba(10,10,14,0.90) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .dtcc-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dtcc-header .logo img {
+            height: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .dtcc-header .logo-text {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--dtcc-white);
+            line-height: 1.2;
+        }
+
+        .dtcc-header nav {
+            margin-left: auto;
+            display: flex;
+            gap: 24px;
+        }
+
+        .dtcc-header nav a {
+            color: var(--dtcc-gold);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            transition: opacity 0.2s ease;
+        }
+
+        .dtcc-header nav a:hover {
+            opacity: 0.8;
+        }
+
+        /* DTCC Footer */
+        .dtcc-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: #0f0f14;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .dtcc-footer .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dtcc-footer .footer-brand img {
+            height: 22px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .dtcc-footer .footer-brand span {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--dtcc-white);
+        }
+
+        .dtcc-footer .footer-info {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .dtcc-footer .footer-info a {
+            color: var(--dtcc-gold);
+            text-decoration: none;
+        }
+
+        .dtcc-footer .footer-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Adjust reveal container for header/footer */
+        .reveal {
+            position: fixed !important;
+            top: 56px !important;
+            bottom: 48px !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: auto !important;
+        }
+
+        .reveal .slides {
+            height: 100% !important;
+        }
+
+        .reveal .slides section {
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            max-height: 100% !important;
+            padding-bottom: 20px !important;
+            width: 95% !important;
+            max-width: 1400px !important;
+        }
+
+        .reveal .slides {
+            width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        .reveal {
+            overflow: hidden !important;
+        }
+
+        body {
+            overflow: hidden !important;
+        }
+
+        /* Custom scrollbar styling */
+        .reveal .slides section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .reveal .slides section::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+        }
+
+        .reveal .slides section::-webkit-scrollbar-thumb {
+            background: var(--dtcc-gold);
+            border-radius: 3px;
+        }
+
+        .reveal .slides section::-webkit-scrollbar-thumb:hover {
+            background: #e5c830;
+        }
+
+        .columns {
+            display: flex;
+            gap: 2em;
+            justify-content: center;
+        }
+
+        .column {
+            flex: 1;
+            max-width: 45%;
+        }
+
+        .box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 1em;
+            margin: 0.5em 0;
+        }
+
+        .box h3 {
+            margin-top: 0;
+            font-size: 1em;
+            color: var(--dtcc-gold);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1em;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .stat-box {
+            background: rgba(250, 218, 54, 0.1);
+            border: 1px solid var(--dtcc-gold);
+            border-radius: 8px;
+            padding: 1em;
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--dtcc-gold);
+            display: block;
+        }
+
+        .stat-box .label {
+            font-size: 0.7em;
+            color: var(--dtcc-white-subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .lod-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1em;
+            max-width: 800px;
+            margin: 1em auto;
+        }
+
+        .lod-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 1em;
+            text-align: center;
+        }
+
+        .lod-item .lod-name {
+            color: var(--dtcc-gold);
+            font-weight: 700;
+            font-size: 1.2em;
+            margin-bottom: 0.3em;
+        }
+
+        .lod-item .lod-desc {
+            color: var(--dtcc-white-subtle);
+            font-size: 0.7em;
+        }
+
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .arch-box {
+            background: rgba(250, 218, 54, 0.15);
+            border: 2px solid var(--dtcc-gold);
+            border-radius: 8px;
+            padding: 0.8em 2em;
+            text-align: center;
+            width: 80%;
+        }
+
+        .arch-box.main {
+            background: var(--dtcc-gold);
+            color: var(--dtcc-dark);
+        }
+
+        .arch-box.main h3 {
+            color: var(--dtcc-dark);
+            margin: 0;
+        }
+
+        .arch-box h3 {
+            margin: 0;
+            font-size: 1em;
+        }
+
+        .arch-box p {
+            margin: 0.2em 0 0 0;
+            font-size: 0.7em;
+            color: var(--dtcc-white-subtle);
+        }
+
+        .arch-row {
+            display: flex;
+            gap: 1em;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .arch-row .arch-box {
+            width: auto;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- DTCC Header -->
+    <header class="dtcc-header">
+        <div class="logo">
+            <img src="https://www.dtcc.chalmers.se/dtcc-logo.png" alt="DTCC Logo">
+            <div class="logo-text">Digital Twin<br>Cities Centre</div>
+        </div>
+        <nav>
+            <a href="https://www.dtcc.chalmers.se/projects">Projects</a>
+            <a href="https://www.dtcc.chalmers.se/partners">Partners</a>
+            <a href="https://www.dtcc.chalmers.se/about">About</a>
+            <a href="https://github.com/dtcc-platform">GitHub</a>
+        </nav>
+    </header>
+
+    <!-- DTCC Footer -->
+    <footer class="dtcc-footer">
+        <div class="footer-brand">
+            <img src="https://www.dtcc.chalmers.se/dtcc-logo.png" alt="DTCC">
+            <span>Digital Twin Cities Centre</span>
+        </div>
+        <div class="footer-info">
+            <span>Chalmers University of Technology, Gothenburg, Sweden</span>
+            <a href="mailto:dtcc@chalmers.se">dtcc@chalmers.se</a>
+            <a href="https://github.com/dtcc-platform" target="_blank">GitHub</a>
+        </div>
+    </footer>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section>
+                <h1>DTCC Platform</h1>
+                <p class="subtitle">Current Features Overview</p>
+                <p style="margin-top: 2em; color: var(--dtcc-white-subtle); font-size: 0.8em;">
+                    Digital Twin Cities Centre<br>
+                    Chalmers University of Technology
+                </p>
+                <p style="color: var(--dtcc-white-subtle); font-size: 0.6em; margin-top: 2em;">November 2025</p>
+            </section>
+
+            <!-- Slide 2: What is DTCC? -->
+            <section>
+                <h2>What is DTCC Platform?</h2>
+                <ul>
+                    <li><strong class="gold">Open-source Python platform</strong> for creating digital twins of cities</li>
+                    <li>Developed at <strong class="gold">Chalmers University of Technology</strong></li>
+                    <li>Complete pipeline from <strong class="gold">data acquisition</strong> through <strong class="gold">3D geometry generation</strong> to <strong class="gold">visualization</strong></li>
+                    <li>Enables urban modeling at <strong class="gold">city scale</strong></li>
+                </ul>
+            </section>
+
+            <!-- Slide 3: Architecture -->
+            <section>
+                <h2>Platform Architecture</h2>
+                <div class="arch-diagram">
+                    <div class="arch-box main">
+                        <h3>dtcc</h3>
+                        <p style="color: var(--dtcc-dark);">Meta-package & Unified API</p>
+                    </div>
+                    <div class="arch-row">
+                        <div class="arch-box">
+                            <h3>dtcc-core</h3>
+                            <p>C++ Core + Python API</p>
+                        </div>
+                        <div class="arch-box">
+                            <h3>dtcc-data</h3>
+                            <p>Data Acquisition</p>
+                        </div>
+                        <div class="arch-box">
+                            <h3>dtcc-viewer</h3>
+                            <p>Visualization (optional)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 4: Data Model -->
+            <section>
+                <h2>Data Model Hierarchy</h2>
+                <div class="columns">
+                    <div class="column">
+                        <div class="box">
+                            <h3>Objects</h3>
+                            <p>City, Building, Terrain, RoadNetwork, Landuse, Tree</p>
+                        </div>
+                        <div class="box">
+                            <h3>Geometries</h3>
+                            <p>Mesh, PointCloud, Surface, Raster, VolumeMesh, Bounds</p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="box">
+                            <h3>Values</h3>
+                            <p>Field (scalar/vector), Raster values</p>
+                        </div>
+                        <div class="box">
+                            <h3>Serialization</h3>
+                            <p>Protobuf for efficient binary storage and language-agnostic exchange</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Data Acquisition -->
+            <section>
+                <h2>Data Acquisition</h2>
+                <div class="columns">
+                    <div class="column">
+                        <h3 style="color: var(--dtcc-gold);">Data Sources</h3>
+                        <ul>
+                            <li>DTCC servers (curated Swedish data)</li>
+                            <li>OpenStreetMap (worldwide)</li>
+                        </ul>
+                        <h3 style="color: var(--dtcc-gold); margin-top: 1em;">Data Types</h3>
+                        <ul>
+                            <li>LiDAR point clouds (.laz)</li>
+                            <li>Building footprints</li>
+                            <li>Road networks</li>
+                        </ul>
+                    </div>
+                    <div class="column">
+                        <h3 style="color: var(--dtcc-gold);">Features</h3>
+                        <ul>
+                            <li>Intelligent superset caching (~80% fewer API calls)</li>
+                            <li>Async parallel downloads</li>
+                            <li>Automatic coordinate transformation</li>
+                            <li>Multi-format support</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 6: Core Classes -->
+            <section>
+                <h2>Core Classes</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>City</code></td><td>Top-level container with buildings, terrain, roads</td></tr>
+                        <tr><td><code>Building</code></td><td>Individual building with multi-LOD geometries</td></tr>
+                        <tr><td><code>PointCloud</code></td><td>3D points with classification, intensity, returns</td></tr>
+                        <tr><td><code>Mesh</code></td><td>Triangulated surface mesh with vertices and faces</td></tr>
+                        <tr><td><code>VolumeMesh</code></td><td>Tetrahedral mesh for simulation</td></tr>
+                        <tr><td><code>Raster</code></td><td>Georeferenced grid data (elevation, land use)</td></tr>
+                        <tr><td><code>Surface</code></td><td>Planar surfaces in 3D space</td></tr>
+                        <tr><td><code>Bounds</code></td><td>Spatial bounding box with set operations</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Slide 7: Multi-LOD -->
+            <section>
+                <h2>Multi-LOD Support</h2>
+                <div class="lod-grid">
+                    <div class="lod-item">
+                        <div class="lod-name">LOD0</div>
+                        <div class="lod-desc">2D Footprint<br>(polygon)</div>
+                    </div>
+                    <div class="lod-item">
+                        <div class="lod-name">LOD1</div>
+                        <div class="lod-desc">Extruded building<br>(flat roof)</div>
+                    </div>
+                    <div class="lod-item">
+                        <div class="lod-name">LOD2</div>
+                        <div class="lod-desc">Detailed building<br>(roof structure)</div>
+                    </div>
+                    <div class="lod-item">
+                        <div class="lod-name">LOD3</div>
+                        <div class="lod-desc">Architectural<br>detail</div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 1.5em; color: var(--dtcc-white-subtle);">
+                    Progressive detail levels for buildings and city models
+                </p>
+            </section>
+
+            <!-- Slide 8: Geometry Processing -->
+            <section>
+                <h2>Geometry Processing</h2>
+                <div class="columns">
+                    <div class="column">
+                        <div class="box">
+                            <h3>Terrain</h3>
+                            <ul style="font-size: 0.85em;">
+                                <li>Mesh from point cloud/raster</li>
+                                <li>Building footprint conformance</li>
+                                <li>Variable resolution subdomains</li>
+                            </ul>
+                        </div>
+                        <div class="box">
+                            <h3>Buildings</h3>
+                            <ul style="font-size: 0.85em;">
+                                <li>Automatic LOD1 generation</li>
+                                <li>Height from point cloud</li>
+                                <li>Footprint simplification</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="box">
+                            <h3>Point Clouds</h3>
+                            <ul style="font-size: 0.85em;">
+                                <li>Outlier removal</li>
+                                <li>Classification filtering</li>
+                                <li>Vegetation extraction</li>
+                            </ul>
+                        </div>
+                        <div class="box">
+                            <h3>Meshes</h3>
+                            <ul style="font-size: 0.85em;">
+                                <li>Surface & volume mesh</li>
+                                <li>Tiling for 3D printing</li>
+                                <li>Extrusion to solid</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 9: File Formats -->
+            <section>
+                <h2>Supported File Formats</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Formats</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Point Clouds</td><td>LAS, LAZ, CSV, Protobuf</td></tr>
+                        <tr><td>Meshes</td><td>OBJ, PLY, STL, VTK, VTU, glTF, GLB, FBX, DAE</td></tr>
+                        <tr><td>Vector Data</td><td>GeoJSON, Shapefile, GeoPackage</td></tr>
+                        <tr><td>City Models</td><td>CityJSON 1.1, Protobuf</td></tr>
+                        <tr><td>Raster</td><td>GeoTIFF (via rasterio)</td></tr>
+                    </tbody>
+                </table>
+                <p style="text-align: center; margin-top: 1em; color: var(--dtcc-gold); font-size: 0.8em;">
+                    25+ file formats supported
+                </p>
+            </section>
+
+            <!-- Slide 10: Visualization -->
+            <section>
+                <h2>Visualization</h2>
+                <div class="box" style="max-width: 600px; margin: 1em auto;">
+                    <h3>dtcc-viewer (Optional)</h3>
+                    <ul>
+                        <li>Interactive 3D visualization</li>
+                        <li>View any geometry type (City, Mesh, PointCloud, Raster...)</li>
+                        <li>Simple <code>.view()</code> method on all objects</li>
+                        <li>Graceful fallback when not installed</li>
+                    </ul>
+                </div>
+                <pre><code>city.view()
+mesh.view()
+pointcloud.view()</code></pre>
+            </section>
+
+            <!-- Slide 11: Code Example -->
+            <section>
+                <h2>Code Example</h2>
+                <p style="color: var(--dtcc-white-subtle); font-size: 0.8em;">Basic City Building Workflow</p>
+                <pre><code>import dtcc
+
+city = dtcc.City()
+city.bounds = dtcc.Bounds(xmin, ymin, xmax, ymax)
+city.download_footprints()
+city.download_pointcloud()
+city.build_terrain(cell_size=2.0, build_mesh=True)
+city.build_lod1_buildings()
+city.view()
+city.save("city.json")</code></pre>
+                <p style="text-align: center; margin-top: 1em; color: var(--dtcc-gold); font-size: 0.7em;">
+                    From raw data to 3D city model in 8 lines of code
+                </p>
+            </section>
+
+            <!-- Slide 12: Statistics -->
+            <section>
+                <h2>Platform Statistics</h2>
+                <div class="stat-grid">
+                    <div class="stat-box">
+                        <span class="number">260K</span>
+                        <span class="label">Lines of Code</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="number">25+</span>
+                        <span class="label">File Formats</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="number">300+</span>
+                        <span class="label">API Functions</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="number">25+</span>
+                        <span class="label">Core Classes</span>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 1.5em; color: var(--dtcc-white-subtle); font-size: 0.7em;">
+                    Python 3.10+ | 33 External Dependencies | C++ Core with Python Bindings
+                </p>
+            </section>
+
+            <!-- Slide 13: Design Principles -->
+            <section>
+                <h2>Key Design Principles</h2>
+                <ul style="max-width: 700px; margin: 0 auto;">
+                    <li><strong class="gold">Interoperability</strong> - Protobuf serialization, industry-standard formats</li>
+                    <li><strong class="gold">Modularity</strong> - Clear separation of objects, geometries, values</li>
+                    <li><strong class="gold">Performance</strong> - C++ core with Python bindings (pybind11)</li>
+                    <li><strong class="gold">Extensibility</strong> - Mixin-based architecture, attribute dictionaries</li>
+                    <li><strong class="gold">City-Scale Focus</strong> - Designed for urban digital twins, not individual buildings</li>
+                </ul>
+            </section>
+
+            <!-- Slide 14: Status & Resources -->
+            <section>
+                <h2>Development Status</h2>
+                <div class="columns">
+                    <div class="column">
+                        <div class="box">
+                            <h3>Current Status</h3>
+                            <ul style="font-size: 0.85em;">
+                                <li>Version: <strong>0.9.x</strong> (approaching 1.0)</li>
+                                <li>License: <strong>MIT</strong></li>
+                                <li>Active since: <strong>February 2023</strong></li>
+                                <li>Contributors: <strong>17+</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="box">
+                            <h3>Resources</h3>
+                            <ul style="font-size: 0.85em;">
+                                <li>GitHub: <strong>github.com/dtcc-platform</strong></li>
+                                <li>Website: <strong>dtcc.chalmers.se</strong></li>
+                                <li>Institution: <strong>Chalmers University</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 1.5em; color: var(--dtcc-gold); font-size: 0.9em;">
+                    Open Source | Academic Research | Industry Applications
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/reveal.js@5/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            progress: true,
+            controls: true,
+            center: true,
+            transition: 'slide'
+        });
+    </script>
+</body>
+</html>
